@@ -1,5 +1,16 @@
 # ETCS-Moving-Block-System
 
+
+Repository migration notice
+
+This repository is no longer actively maintained.  
+Ongoing development and updates have been moved to the following GitLab repository:
+
+👉 **https://gitlab.univ-eiffel.fr/julie.beugin/ETCS-Moving-Block-System**
+
+
+
+
 This repository hosts **formal behavioural models** and **verification artefacts** supporting **research on the safety of ETCS Moving Block railway systems**.  
 The work extends modelling previously initiated in **PERFORMINGRAIL (2020–2023)** and is aligned with the **Shift2Rail X2Rail-1, X2Rail-3, and X2Rail-5** functional specifications.
 
