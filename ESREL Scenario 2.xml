@@ -2454,7 +2454,7 @@ void ComputeA() // acceleration
     int32_t error_sum[3]; 
  
    
-    headway_int[id] =  ma_int[id] - P_int_delay[id]-7*10000-average_speed_int*6/10;
+    headway_int[id] =  ma_int[id] - P_int_delay[id]-7*10000;
 if ( headway_int[id]&lt;0){
 headway_int[id]=0;
 }
@@ -2647,36 +2647,20 @@ mode[id] = MA[id].MAMODE</label>
 		<name>Ext_PositionUpdate</name>
 		<parameter>const int i</parameter>
 		<declaration>clock c = 0.0;
-const int sensorDelay = 10;
+const int sensorDelay = 5;//in 0.01 s
 
 int32_t delayPosition[3]={0,0,0};</declaration>
 		<location id="id243" x="-136" y="-34">
-			<name x="-110" y="-26">I_GO</name>
-			<committed/>
+			<label kind="invariant" x="-144" y="-68">c&lt;=sensorDelay</label>
 		</location>
-		<location id="id244" x="-136" y="51">
-			<label kind="invariant" x="-146" y="68">c&lt;=sensorDelay</label>
-		</location>
-		<location id="id245" x="-229" y="-102">
-		</location>
-		<init ref="id245"/>
-		<transition id="id246">
-			<source ref="id245"/>
-			<target ref="id243"/>
-			<label kind="synchronisation" x="-204" y="-85">LOC_sendLocationSpeed [i] ?</label>
-		</transition>
-		<transition id="id247">
-			<source ref="id244"/>
-			<target ref="id243"/>
-			<nail x="-280" y="51"/>
-			<nail x="-280" y="-34"/>
-		</transition>
-		<transition id="id248">
+		<init ref="id243"/>
+		<transition id="id244">
 			<source ref="id243"/>
-			<target ref="id244"/>
-			<label kind="assignment" x="34" y="-8">P_int_delay[i]=P_int[i], c=0</label>
+			<target ref="id243"/>
+			<label kind="assignment" x="-127" y="25">P_int_delay[i]=P_int[i], c=0</label>
 			<nail x="119" y="-34"/>
 			<nail x="119" y="51"/>
+			<nail x="-136" y="51"/>
 		</transition>
 	</template>
 	<template>
@@ -2684,17 +2668,17 @@ int32_t delayPosition[3]={0,0,0};</declaration>
 		<declaration>// ****************************************************************************************
 // **********************  Module for each time step to be considered **********************
 </declaration>
-		<location id="id249" x="0" y="0">
+		<location id="id245" x="0" y="0">
 			<name x="-42" y="-17">Step</name>
 			<label kind="invariant" x="-85" y="17">LOC_C_freq&lt;=LOC_freq &amp;&amp;
 LOC_AbsTime' == 0.01</label>
 			<label kind="comments" x="-153" y="-178">This automaton updates the train every 0.1 seconds.
 The system discretized at this interval.</label>
 		</location>
-		<init ref="id249"/>
-		<transition id="id250">
-			<source ref="id249"/>
-			<target ref="id249"/>
+		<init ref="id245"/>
+		<transition id="id246">
+			<source ref="id245"/>
+			<target ref="id245"/>
 			<label kind="guard" x="59" y="-102">LOC_C_freq==LOC_freq</label>
 			<label kind="synchronisation" x="59" y="-119">LOC_NextTimeStep!</label>
 			<label kind="assignment" x="59" y="-76">LOC_C_freq=0</label>
@@ -2714,32 +2698,32 @@ LOC_Available_Train_Data_Last_Confirmed [ID_Train] = initValueLastConfirmedTrain
 LOC_Available_Train_Data [ID_Train]= initValueTrainData;
 LOC_Ack_Train_Data_RBC [ID_Train] = initValueACKTrainData;
 LOC_start[ID_Train]  = true ; }</declaration>
-		<location id="id251" x="-2915" y="-2142">
+		<location id="id247" x="-2915" y="-2142">
 			<label kind="comments" x="-2907" y="-2227">This automaton initializes some Onboard parameters.</label>
 			<committed/>
 		</location>
-		<location id="id252" x="-2685" y="-2142">
+		<location id="id248" x="-2685" y="-2142">
 			<committed/>
 		</location>
-		<location id="id253" x="-2482" y="-2142">
+		<location id="id249" x="-2482" y="-2142">
 			<committed/>
 		</location>
-		<location id="id254" x="-2235" y="-2142">
+		<location id="id250" x="-2235" y="-2142">
 		</location>
-		<init ref="id251"/>
-		<transition id="id255">
-			<source ref="id253"/>
-			<target ref="id254"/>
+		<init ref="id247"/>
+		<transition id="id251">
+			<source ref="id249"/>
+			<target ref="id250"/>
 			<label kind="synchronisation" x="-2490" y="-2133">integrityInfoRecv[ID_Train] !</label>
 		</transition>
-		<transition id="id256">
-			<source ref="id252"/>
-			<target ref="id253"/>
+		<transition id="id252">
+			<source ref="id248"/>
+			<target ref="id249"/>
 			<label kind="assignment" x="-2788" y="-2184">LOC_sentII [ID_Train] = LOC_CurrentIntegrityStatus [ID_Train]</label>
 		</transition>
-		<transition id="id257">
-			<source ref="id251"/>
-			<target ref="id252"/>
+		<transition id="id253">
+			<source ref="id247"/>
+			<target ref="id248"/>
 			<label kind="synchronisation" x="-2897" y="-2159">LOC_initialise[ID_Train]?</label>
 			<label kind="assignment" x="-2881" y="-2142">CONFIRMED_Update(),
 InitTrainData()</label>
@@ -2750,29 +2734,29 @@ InitTrainData()</label>
 		<parameter>int ID_Train</parameter>
 		<declaration>clock t_II  ;
 const int INTEGRITY_CHECK_TIMEOUT = 2*10;//supossed to be fast 2*10 ; //unit 0,1 sTime of sending Integrity info to TPR from IIM</declaration>
-		<location id="id258" x="-238" y="-408">
+		<location id="id254" x="-238" y="-408">
 			<name x="-221" y="-416">Init</name>
 			<label kind="invariant" x="-323" y="-442">t_II &lt;= INTEGRITY_CHECK_TIMEOUT</label>
 			<label kind="comments" x="-603" y="-544">This automaton sends each INTEGRITY_CHECK_TIMEOUT
 the current integrity status to the TPR_Management automaton.
 The value sent of integrity is stored in the variable LOC_sentII.</label>
 		</location>
-		<location id="id259" x="-688" y="-408">
+		<location id="id255" x="-688" y="-408">
 			<name x="-765" y="-450">Send_Integrity_Info</name>
 			<committed/>
 		</location>
-		<init ref="id258"/>
-		<transition id="id260">
-			<source ref="id259"/>
-			<target ref="id258"/>
+		<init ref="id254"/>
+		<transition id="id256">
+			<source ref="id255"/>
+			<target ref="id254"/>
 			<label kind="synchronisation" x="-578" y="-340">integrityInfoRecv[ID_Train] !</label>
 			<label kind="assignment" x="-568" y="-357">t_II = 0</label>
 			<nail x="-688" y="-340"/>
 			<nail x="-238" y="-340"/>
 		</transition>
-		<transition id="id261">
-			<source ref="id258"/>
-			<target ref="id259"/>
+		<transition id="id257">
+			<source ref="id254"/>
+			<target ref="id255"/>
 			<label kind="guard" x="-612" y="-425">t_II == INTEGRITY_CHECK_TIMEOUT</label>
 			<label kind="assignment" x="-654" y="-408">LOC_sentII [ID_Train] = LOC_CurrentIntegrityStatus [ID_Train]</label>
 		</transition>
@@ -2813,69 +2797,69 @@ bool condition9(){ return ((msgTPRReceived[ID_Train]).positionReport.trainIntegr
 
 
 </declaration>
-		<location id="id262" x="-25" y="85">
+		<location id="id258" x="-25" y="85">
 			<name x="-119" y="102">No_Integrity_Information</name>
 		</location>
-		<location id="id263" x="-561" y="93">
+		<location id="id259" x="-561" y="93">
 			<name x="-765" y="93">Integrity_Confirmed_By_TIMS</name>
 			<label kind="comments" x="-833" y="-391">This model corresponds to PERFORMINGRAIL D2.3 for the LTI use case,
 excluding driver behavior.</label>
 		</location>
-		<init ref="id263"/>
-		<transition id="id264">
-			<source ref="id263"/>
-			<target ref="id262"/>
+		<init ref="id259"/>
+		<transition id="id260">
+			<source ref="id259"/>
+			<target ref="id258"/>
 			<label kind="guard" x="-331" y="-348">condition9()</label>
 			<label kind="assignment" x="-331" y="-331">NOINFORMATION_Update()</label>
 			<nail x="-553" y="-323"/>
 			<nail x="17" y="-331"/>
 			<nail x="-9" y="-17"/>
 		</transition>
-		<transition id="id265">
-			<source ref="id263"/>
-			<target ref="id263"/>
+		<transition id="id261">
+			<source ref="id259"/>
+			<target ref="id259"/>
 			<label kind="synchronisation" x="-799" y="178">TIIreceived_Confirmed [ID_Train]?</label>
 			<label kind="assignment" x="-799" y="195">TrainDataLastConfirmed_Update(),
 TrainLengthLastConfirmed_Update()</label>
 			<nail x="-578" y="178"/>
 			<nail x="-807" y="178"/>
 		</transition>
-		<transition id="id266">
-			<source ref="id263"/>
-			<target ref="id262"/>
+		<transition id="id262">
+			<source ref="id259"/>
+			<target ref="id258"/>
 			<label kind="guard" x="-467" y="-42">condition8()</label>
 			<label kind="assignment" x="-467" y="-17">NOINFORMATION_Update()</label>
 			<nail x="-503" y="-17"/>
 			<nail x="-375" y="-17"/>
 		</transition>
-		<transition id="id267">
-			<source ref="id263"/>
-			<target ref="id262"/>
+		<transition id="id263">
+			<source ref="id259"/>
+			<target ref="id258"/>
 			<label kind="guard" x="-459" y="-136">condition7()</label>
 			<label kind="assignment" x="-459" y="-110">NOINFORMATION_Update()</label>
 			<nail x="-501" y="-110"/>
 			<nail x="-84" y="-118"/>
 		</transition>
-		<transition id="id268">
-			<source ref="id263"/>
-			<target ref="id262"/>
+		<transition id="id264">
+			<source ref="id259"/>
+			<target ref="id258"/>
 			<label kind="guard" x="-306" y="-221">condition5()</label>
 			<label kind="synchronisation" x="-323" y="-204">TPRReceived [ID_Train]?</label>
 			<label kind="assignment" x="-323" y="-187">NOINFORMATION_Update()</label>
 			<nail x="-510" y="-196"/>
 			<nail x="-42" y="-204"/>
 		</transition>
-		<transition id="id269">
-			<source ref="id263"/>
-			<target ref="id262"/>
+		<transition id="id265">
+			<source ref="id259"/>
+			<target ref="id258"/>
 			<label kind="guard" x="-297" y="-289">condition1()</label>
 			<label kind="assignment" x="-297" y="-272">NOINFORMATION_Update()</label>
 			<nail x="-536" y="-264"/>
 			<nail x="-17" y="-272"/>
 		</transition>
-		<transition id="id270">
-			<source ref="id262"/>
-			<target ref="id263"/>
+		<transition id="id266">
+			<source ref="id258"/>
+			<target ref="id259"/>
 			<label kind="guard" x="-408" y="51">condition3()</label>
 			<label kind="synchronisation" x="-408" y="68">TIIreceived_Confirmed [ID_Train]?</label>
 			<label kind="assignment" x="-408" y="93">CONFIRMED_Update(),
@@ -2897,7 +2881,7 @@ void updateTrainData() {
      msgVTDReceived[ID_Train].L_TRAIN = TrainLengthSentToTM[ID_Train]; //ADR aditional for send VTDReceived
      msgVTDReceived[ID_Train].msg.NID_ENGINE =ID_Train; //ADR aditional for send VTDReceived
 }</declaration>
-		<location id="id271" x="-2984" y="-3468">
+		<location id="id267" x="-2984" y="-3468">
 			<label kind="comments" x="-3493" y="-3978">We took the initial conditions defined in Table 7.21 page 138 in D2.2
 (Valid Train data are always available, Valid Train Data have been 
 acknowledged by the RBC, Train is moving in the middle of the track).
@@ -2909,93 +2893,93 @@ for  acknowledgement from this latter. In the case that the train is moving,
  train data can not be requested subset 26, part 5, page 74.</label>
 			<committed/>
 		</location>
-		<location id="id272" x="-3298" y="-3629">
+		<location id="id268" x="-3298" y="-3629">
 			<name x="-3349" y="-3621">wait_TD_ACK</name>
 			<label kind="invariant" x="-3400" y="-3604">t_wait &lt;= wait_TD_ACK_TIMEOUT</label>
 		</location>
-		<location id="id273" x="-3749" y="-3629">
+		<location id="id269" x="-3749" y="-3629">
 			<name x="-3825" y="-3663">send_TD_to_TM</name>
 			<committed/>
 		</location>
-		<location id="id274" x="-3297" y="-3781">
+		<location id="id270" x="-3297" y="-3781">
 			<name x="-3272" y="-3781">Failure_ACK</name>
 		</location>
-		<location id="id275" x="-3749" y="-3374">
+		<location id="id271" x="-3749" y="-3374">
 			<name x="-3808" y="-3408">Update_TD_Info</name>
 			<committed/>
 		</location>
-		<location id="id276" x="-3859" y="-3468">
+		<location id="id272" x="-3859" y="-3468">
 			<name x="-3978" y="-3477">Wait_train_data</name>
 		</location>
-		<location id="id277" x="-3264" y="-3468">
+		<location id="id273" x="-3264" y="-3468">
 		</location>
-		<location id="id278" x="-2779" y="-3476">
+		<location id="id274" x="-2779" y="-3476">
 		</location>
-		<init ref="id278"/>
-		<transition id="id279">
-			<source ref="id278"/>
-			<target ref="id271"/>
+		<init ref="id274"/>
+		<transition id="id275">
+			<source ref="id274"/>
+			<target ref="id267"/>
 			<label kind="synchronisation" x="-2958" y="-3493">LOC_initialise[ID_Train]?</label>
 		</transition>
-		<transition id="id280">
-			<source ref="id271"/>
-			<target ref="id277"/>
+		<transition id="id276">
+			<source ref="id267"/>
+			<target ref="id273"/>
 			<label kind="guard" x="-3196" y="-3468">!LOC_start[ID_Train]</label>
 		</transition>
-		<transition id="id281">
-			<source ref="id271"/>
-			<target ref="id276"/>
+		<transition id="id277">
+			<source ref="id267"/>
+			<target ref="id272"/>
 			<label kind="guard" x="-3587" y="-3264">LOC_start[ID_Train]</label>
 			<label kind="synchronisation" x="-3630" y="-3247">LOC_RequestTrainData[ID_Train]!</label>
 			<nail x="-3171" y="-3264"/>
 			<nail x="-3859" y="-3264"/>
 		</transition>
-		<transition id="id282">
-			<source ref="id277"/>
-			<target ref="id276"/>
+		<transition id="id278">
+			<source ref="id273"/>
+			<target ref="id272"/>
 			<label kind="guard" x="-3689" y="-3510">(!LOC_Available_Train_Data [ID_Train] 
 &amp;&amp; TrainSpeedSentToTPR[ID_Train] == 0)</label>
 			<label kind="synchronisation" x="-3655" y="-3527">LOC_RequestTrainData[ID_Train]!</label>
 			<label kind="assignment" x="-3647" y="-3468">LOC_start[ID_Train]= false</label>
 		</transition>
-		<transition id="id283">
-			<source ref="id275"/>
-			<target ref="id277"/>
+		<transition id="id279">
+			<source ref="id271"/>
+			<target ref="id273"/>
 			<nail x="-3664" y="-3341"/>
 			<nail x="-3264" y="-3341"/>
 		</transition>
-		<transition id="id284">
-			<source ref="id277"/>
-			<target ref="id275"/>
+		<transition id="id280">
+			<source ref="id273"/>
+			<target ref="id271"/>
 			<label kind="guard" x="-3647" y="-3425">LOC_Available_Train_Data [ID_Train] == false 
 &amp;&amp; TrainSpeedSentToTPR[ID_Train] != 0</label>
 			<label kind="assignment" x="-3621" y="-3357">LOC_Ack_Train_Data_RBC [ID_Train] = false,
 LOC_Available_Train_Data_Last_Lost [ID_Train] = false,
 LOC_Available_Train_Data_Last_Confirmed [ID_Train] = false</label>
 		</transition>
-		<transition id="id285">
-			<source ref="id272"/>
-			<target ref="id274"/>
+		<transition id="id281">
+			<source ref="id268"/>
+			<target ref="id270"/>
 			<label kind="guard" x="-3426" y="-3740">t_wait == wait_TD_ACK_TIMEOUT</label>
 			<label kind="assignment" x="-3460" y="-3723">LOC_Ack_Train_Data_RBC [ID_Train] = false</label>
 		</transition>
-		<transition id="id286">
-			<source ref="id276"/>
-			<target ref="id273"/>
+		<transition id="id282">
+			<source ref="id272"/>
+			<target ref="id269"/>
 			<label kind="synchronisation" x="-3868" y="-3578">trainData [ID_Train]?</label>
 			<label kind="assignment" x="-3859" y="-3561">updateTrainData()</label>
 		</transition>
-		<transition id="id287">
-			<source ref="id273"/>
-			<target ref="id272"/>
+		<transition id="id283">
+			<source ref="id269"/>
+			<target ref="id268"/>
 			<label kind="guard" x="-3664" y="-3663">LOC_Available_Train_Data [ID_Train]== true</label>
 			<label kind="synchronisation" x="-3638" y="-3646">VTDReceived[ID_Train] !</label>
 			<label kind="assignment" x="-3596" y="-3629">t_wait = 0</label>
 			<nail x="-3315" y="-3629"/>
 		</transition>
-		<transition id="id288">
-			<source ref="id272"/>
-			<target ref="id277"/>
+		<transition id="id284">
+			<source ref="id268"/>
+			<target ref="id273"/>
 			<label kind="synchronisation" x="-3061" y="-3655">VTDAckF[ID_Train] ?</label>
 			<label kind="assignment" x="-3137" y="-3629">LOC_Ack_Train_Data_RBC [ID_Train]= true</label>
 			<nail x="-2976" y="-3629"/>
@@ -3102,7 +3086,7 @@ MSGPositionReport FillTrainPositionReport(){
 */
 }
 </declaration>
-		<location id="id289" x="-19694" y="-19099">
+		<location id="id285" x="-19694" y="-19099">
 			<name x="-19737" y="-19090">Idle</name>
 			<label kind="invariant" x="-19788" y="-19074">t_tpr &lt;= T_CYCLOC</label>
 			<label kind="comments" x="-20374" y="-19575">This automaton emulates the behavior of Train Position Reporting function.
@@ -3111,67 +3095,67 @@ receives a request for Position Report (RequestPositionReport) from Train Manage
 sends the train position report which includes, mainly, 
 the train position and the train integrity information to Train Management.</label>
 		</location>
-		<location id="id290" x="-19839" y="-19354">
+		<location id="id286" x="-19839" y="-19354">
 			<name x="-20068" y="-19388">Wait_Train_Localization_Unit_Position</name>
 		</location>
-		<location id="id291" x="-20043" y="-19201">
+		<location id="id287" x="-20043" y="-19201">
 			<name x="-20289" y="-19210">Aggregating_data_in_TPR_message</name>
 			<committed/>
 		</location>
-		<location id="id292" x="-19609" y="-19286">
+		<location id="id288" x="-19609" y="-19286">
 			<name x="-19592" y="-19303">Receive_TPR_Request</name>
 			<committed/>
 		</location>
-		<location id="id293" x="-20102" y="-19099">
+		<location id="id289" x="-20102" y="-19099">
 			<name x="-20187" y="-19108">SendTPR</name>
 			<committed/>
 		</location>
-		<init ref="id289"/>
-		<transition id="id294">
-			<source ref="id293"/>
-			<target ref="id289"/>
+		<init ref="id285"/>
+		<transition id="id290">
+			<source ref="id289"/>
+			<target ref="id285"/>
 			<label kind="synchronisation" x="-20033" y="-19094">TPRReceived [ID_Train] !</label>
 			<label kind="assignment" x="-20033" y="-19077">t_tpr=0</label>
 			<nail x="-20093" y="-19107"/>
 		</transition>
-		<transition id="id295">
-			<source ref="id291"/>
-			<target ref="id293"/>
+		<transition id="id291">
+			<source ref="id287"/>
+			<target ref="id289"/>
 			<label kind="assignment" x="-20221" y="-19167">msgTPRReceived[ID_Train] = FillTrainPositionReport()</label>
 		</transition>
-		<transition id="id296">
-			<source ref="id292"/>
-			<target ref="id290"/>
+		<transition id="id292">
+			<source ref="id288"/>
+			<target ref="id286"/>
 			<label kind="synchronisation" x="-19813" y="-19312">positionRequest[ID_Train] !</label>
 		</transition>
-		<transition id="id297">
-			<source ref="id289"/>
-			<target ref="id292"/>
+		<transition id="id293">
+			<source ref="id285"/>
+			<target ref="id288"/>
 			<label kind="synchronisation" x="-19703" y="-19244">getTPRRequestF[ID_Train] ?</label>
 		</transition>
-		<transition id="id298">
-			<source ref="id290"/>
-			<target ref="id290"/>
+		<transition id="id294">
+			<source ref="id286"/>
+			<target ref="id286"/>
 			<label kind="synchronisation" x="-19940" y="-19524">integrityInfoRecv[ID_Train] ?</label>
 			<label kind="assignment" x="-19974" y="-19507">TPR_IntegrityInfo = LOC_sentII [ID_Train]</label>
 			<nail x="-19719" y="-19482"/>
 			<nail x="-19966" y="-19482"/>
 		</transition>
-		<transition id="id299">
-			<source ref="id290"/>
-			<target ref="id291"/>
+		<transition id="id295">
+			<source ref="id286"/>
+			<target ref="id287"/>
 			<label kind="synchronisation" x="-20060" y="-19261">positionReceived[ID_Train] ?</label>
 			<label kind="assignment" x="-20085" y="-19244">updateTrainInformationFromLU()</label>
 		</transition>
-		<transition id="id300">
-			<source ref="id289"/>
-			<target ref="id290"/>
+		<transition id="id296">
+			<source ref="id285"/>
+			<target ref="id286"/>
 			<label kind="guard" x="-19847" y="-19227">t_tpr == T_CYCLOC</label>
 			<label kind="synchronisation" x="-19856" y="-19210">positionRequest[ID_Train] !</label>
 		</transition>
-		<transition id="id301">
-			<source ref="id289"/>
-			<target ref="id289"/>
+		<transition id="id297">
+			<source ref="id285"/>
+			<target ref="id285"/>
 			<label kind="synchronisation" x="-19601" y="-19124">integrityInfoRecv[ID_Train] ?</label>
 			<label kind="assignment" x="-19635" y="-19107">TPR_IntegrityInfo= LOC_sentII [ID_Train]</label>
 			<nail x="-19533" y="-19056"/>
@@ -99315,133 +99299,8 @@ system
 			<comment/>
 		</query>
 		<query>
-			<formula>Pr[LOC_AbsTime&lt;=600](&lt;&gt;TS_TSM0.GoToASafeState ||  TS_TSM1.GoToASafeState ||  TS_TSM2.GoToASafeState )</formula>
-			<comment/>
-		</query>
-		<query>
-			<formula>Pr[LOC_AbsTime&lt;=600](&lt;&gt;TS_MA0.GoToASafeState || TS_MA1.GoToASafeState ||  TS_MA2.GoToASafeState )</formula>
-			<comment>7 margin
-
-(0/368 runs) Pr(&lt;&gt; …) in [0,0.00997405] (95% CI)</comment>
-			<result outcome="success" type="interval" value="≤ 0.00997405 (95% CI)" timestamp="2026-01-12 18:18:57 +0100">
-				<option key="--exploration" value="0"/>
-				<option key="--epsilon" value="0.01"/>
-				<details>≤ 0.00997405 (95% CI)</details>
-			</result>
-		</query>
-		<query>
-			<formula>Pr[LOC_AbsTime&lt;=600](&lt;&gt;TS_MA0.GoToASafeState || TS_MA1.GoToASafeState ||  TS_MA2.GoToASafeState )</formula>
-			<comment>6 margin 
-(0/368 runs) Pr(&lt;&gt; …) in [0,0.00997405] (95% CI)</comment>
-			<result outcome="success" type="interval" value="≤ 0.00997405 (95% CI)" timestamp="2026-01-12 18:04:19 +0100">
-				<option key="--exploration" value="0"/>
-				<option key="--epsilon" value="0.01"/>
-				<details>≤ 0.00997405 (95% CI)</details>
-			</result>
-		</query>
-		<query>
-			<formula>Pr[LOC_AbsTime&lt;=600](&lt;&gt;TS_MA0.GoToASafeState || TS_MA1.GoToASafeState ||  TS_MA2.GoToASafeState )</formula>
-			<comment>margin 5
-(66/309 runs) Pr(&lt;&gt; …) in [0.169217,0.263553] (95% CI)
-Unreachable with randomnized</comment>
-			<result outcome="success" type="quantity" value="0.216385 ± 0.0471677 (95% CI)" timestamp="2026-01-12 18:27:02 +0100">
-				<option key="--exploration" value="0"/>
-				<option key="--epsilon" value="0.01"/>
-				<details>0.216385 ± 0.0471677 (95% CI)</details>
-				<plot title="Probability Density Distribution" xaxis="LOC_AbsTime" yaxis="probability density">
-					<series title="density" type="b(0.000000)" color="0x0000ff" encoding="csv">530.0,9.619339009917564E14
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">530.0,0.0
-530.0,9.619339009917564E14
-					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 309 in total, 66 (21.359%) displayed, 243 (78.641%) remaining
-Span of displayed sample: [530, 530]
-Mean estimate of displayed sample: ≈ 530</comment>
-				</plot>
-				<plot title="Probability Density Confidence Intervals" xaxis="LOC_AbsTime" yaxis="probability density">
-					<series title="upper limit" type="b(0.000000)" color="0xa0a0ff" encoding="csv">530.0,0.2635528191843772
-					</series>
-					<series title="lower limit" type="b(0.000000)" color="0x0000ff" encoding="csv">530.0,0.16921733966983768
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">530.0,0.0
-530.0,1.1869363782712048E15
-					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 309 in total, 66 (21.359%) displayed, 243 (78.641%) remaining
-Span of displayed sample: [530, 530]
-Mean estimate of displayed sample: ≈ 530</comment>
-				</plot>
-				<plot title="Probability Distribution" xaxis="LOC_AbsTime" yaxis="probability">
-					<series title="probability" type="b(0.000000)" color="0x0000ff" encoding="csv">530.0,0.21359223300970873
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">530.0,0.0
-530.0,0.21359223300970873
-					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 309 in total, 66 (21.359%) displayed, 243 (78.641%) remaining
-Span of displayed sample: [530, 530]
-Mean estimate of displayed sample: ≈ 530</comment>
-				</plot>
-				<plot title="Probability Confidence Intervals" xaxis="LOC_AbsTime" yaxis="probability">
-					<series title="upper limit" type="b(0.000000)" color="0xa0a0ff" encoding="csv">530.0,0.2635528191843772
-					</series>
-					<series title="lower limit" type="b(0.000000)" color="0x0000ff" encoding="csv">530.0,0.16921733966983768
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">530.0,0.0
-530.0,0.2635528191843772
-					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 309 in total, 66 (21.359%) displayed, 243 (78.641%) remaining
-Span of displayed sample: [530, 530]
-Mean estimate of displayed sample: ≈ 530</comment>
-				</plot>
-				<plot title="Cumulative Probability Distribution" xaxis="LOC_AbsTime" yaxis="probability">
-					<series title="cumulative" type="l" color="0x000000" encoding="csv">530.0,0.0
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">530.0,0.0
-530.0,0.21359223300970875
-					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 309 in total, 66 (21.359%) displayed, 243 (78.641%) remaining
-Span of displayed sample: [530, 530]
-Mean estimate of displayed sample: ≈ 530</comment>
-				</plot>
-				<plot title="Cumulative Probability Confidence Intervals" xaxis="LOC_AbsTime" yaxis="probability">
-					<series title="upper limit" type="k" color="0x0000dd" encoding="csv">530.0,0.011867144565065718
-					</series>
-					<series title="lower limit" type="k" color="0xdd0000" encoding="csv">530.0,0.0
-					</series>
-					<series title="cumulative" type="l" color="0x000000" encoding="csv">530.0,0.0
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">530.0,0.0
-530.0,0.21359223300970875
-					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 309 in total, 66 (21.359%) displayed, 243 (78.641%) remaining
-Span of displayed sample: [530, 530]
-Mean estimate of displayed sample: ≈ 530</comment>
-				</plot>
-				<plot title="Frequency Histogram" xaxis="LOC_AbsTime" yaxis="count">
-					<series title="count" type="b(0.000000)" color="0x0000ff" encoding="csv">530.0,66.0
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">530.0,0.0
-530.0,66.0
-					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 309 in total, 66 (21.359%) displayed, 243 (78.641%) remaining
-Span of displayed sample: [530, 530]
-Mean estimate of displayed sample: ≈ 530</comment>
-				</plot>
-			</result>
-		</query>
-		<query>
 			<formula/>
-			<comment/>
-		</query>
-		<query>
-			<formula/>
-			<comment>WIth delay</comment>
+			<comment>With delay</comment>
 		</query>
 		<query>
 			<formula>Pr[LOC_AbsTime&lt;=600](&lt;&gt;TS_TSM0.GoToASafeState ||  TS_TSM1.GoToASafeState ||  TS_TSM2.GoToASafeState )</formula>
@@ -99483,57 +99342,57 @@ Mean estimate of displayed sample: ≈ 530</comment>
 		<query>
 			<formula>Pr[LOC_AbsTime&lt;=600](&lt;&gt;TS_MA0.GoToASafeState || TS_MA1.GoToASafeState ||  TS_MA2.GoToASafeState )</formula>
 			<comment>Delay 40
-(255/365 runs) Pr(&lt;&gt; …) in [0.64871,0.745294] (95% CI)
-649,121</comment>
-			<result outcome="success" type="quantity" value="0.697002 ± 0.0482922 (95% CI)" timestamp="2026-01-13 09:55:01 +0100">
+(5815/8451 runs) Pr(&lt;&gt; …) in [0.678084,0.697954] (95% CI)
+10401.83</comment>
+			<result outcome="success" type="quantity" value="0.688019 ± 0.00993505 (95% CI)" timestamp="2026-02-05 12:06:53 +0100">
 				<option key="--exploration" value="0"/>
 				<option key="--epsilon" value="0.01"/>
-				<details>0.697002 ± 0.0482922 (95% CI)</details>
+				<details>0.688019 ± 0.00993505 (95% CI)</details>
 				<plot title="Probability Density Distribution" xaxis="LOC_AbsTime" yaxis="probability density">
-					<series title="density" type="b(0.000000)" color="0x0000ff" encoding="csv">530.0,3.1463504246013055E15
+					<series title="density" type="b(0.000000)" color="0x0000ff" encoding="csv">530.0,3.098855973631456E15
 					</series>
 					<series title="average" type="pl" color="0x00dd00" encoding="csv">530.0,0.0
-530.0,3.1463504246013055E15
+530.0,3.098855973631456E15
 					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 365 in total, 255 (69.863%) displayed, 110 (30.137%) remaining
+					<comment>Parameters: α=0.05, ε=0.01, bucket width=2.2204e-16, bucket count=1
+Runs: 8451 in total, 5815 (68.808%) displayed, 2636 (31.192%) remaining
 Span of displayed sample: [530, 530]
 Mean estimate of displayed sample: ≈ 530</comment>
 				</plot>
 				<plot title="Probability Density Confidence Intervals" xaxis="LOC_AbsTime" yaxis="probability density">
-					<series title="upper limit" type="b(0.000000)" color="0xa0a0ff" encoding="csv">530.0,0.7452940091856474
+					<series title="upper limit" type="b(0.000000)" color="0xa0a0ff" encoding="csv">530.0,0.6979543826709121
 					</series>
-					<series title="lower limit" type="b(0.000000)" color="0x0000ff" encoding="csv">530.0,0.648709563872292
+					<series title="lower limit" type="b(0.000000)" color="0x0000ff" encoding="csv">530.0,0.6780842887700842
 					</series>
 					<series title="average" type="pl" color="0x00dd00" encoding="csv">530.0,0.0
-530.0,3.3565058220499445E15
+530.0,3.1433070977183245E15
 					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 365 in total, 255 (69.863%) displayed, 110 (30.137%) remaining
+					<comment>Parameters: α=0.05, ε=0.01, bucket width=2.2204e-16, bucket count=1
+Runs: 8451 in total, 5815 (68.808%) displayed, 2636 (31.192%) remaining
 Span of displayed sample: [530, 530]
 Mean estimate of displayed sample: ≈ 530</comment>
 				</plot>
 				<plot title="Probability Distribution" xaxis="LOC_AbsTime" yaxis="probability">
-					<series title="probability" type="b(0.000000)" color="0x0000ff" encoding="csv">530.0,0.6986301369863014
+					<series title="probability" type="b(0.000000)" color="0x0000ff" encoding="csv">530.0,0.6880842503845699
 					</series>
 					<series title="average" type="pl" color="0x00dd00" encoding="csv">530.0,0.0
-530.0,0.6986301369863014
+530.0,0.6880842503845699
 					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 365 in total, 255 (69.863%) displayed, 110 (30.137%) remaining
+					<comment>Parameters: α=0.05, ε=0.01, bucket width=2.2204e-16, bucket count=1
+Runs: 8451 in total, 5815 (68.808%) displayed, 2636 (31.192%) remaining
 Span of displayed sample: [530, 530]
 Mean estimate of displayed sample: ≈ 530</comment>
 				</plot>
 				<plot title="Probability Confidence Intervals" xaxis="LOC_AbsTime" yaxis="probability">
-					<series title="upper limit" type="b(0.000000)" color="0xa0a0ff" encoding="csv">530.0,0.7452940091856474
+					<series title="upper limit" type="b(0.000000)" color="0xa0a0ff" encoding="csv">530.0,0.6979543826709121
 					</series>
-					<series title="lower limit" type="b(0.000000)" color="0x0000ff" encoding="csv">530.0,0.648709563872292
+					<series title="lower limit" type="b(0.000000)" color="0x0000ff" encoding="csv">530.0,0.6780842887700842
 					</series>
 					<series title="average" type="pl" color="0x00dd00" encoding="csv">530.0,0.0
-530.0,0.7452940091856474
+530.0,0.6979543826709121
 					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 365 in total, 255 (69.863%) displayed, 110 (30.137%) remaining
+					<comment>Parameters: α=0.05, ε=0.01, bucket width=2.2204e-16, bucket count=1
+Runs: 8451 in total, 5815 (68.808%) displayed, 2636 (31.192%) remaining
 Span of displayed sample: [530, 530]
 Mean estimate of displayed sample: ≈ 530</comment>
 				</plot>
@@ -99541,36 +99400,36 @@ Mean estimate of displayed sample: ≈ 530</comment>
 					<series title="cumulative" type="l" color="0x000000" encoding="csv">530.0,0.0
 					</series>
 					<series title="average" type="pl" color="0x00dd00" encoding="csv">530.0,0.0
-530.0,0.6986301369863014
+530.0,0.6880842503845699
 					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 365 in total, 255 (69.863%) displayed, 110 (30.137%) remaining
+					<comment>Parameters: α=0.05, ε=0.01, bucket width=2.2204e-16, bucket count=1
+Runs: 8451 in total, 5815 (68.808%) displayed, 2636 (31.192%) remaining
 Span of displayed sample: [530, 530]
 Mean estimate of displayed sample: ≈ 530</comment>
 				</plot>
 				<plot title="Cumulative Probability Confidence Intervals" xaxis="LOC_AbsTime" yaxis="probability">
-					<series title="upper limit" type="k" color="0x0000dd" encoding="csv">530.0,0.010055619804412956
+					<series title="upper limit" type="k" color="0x0000dd" encoding="csv">530.0,4.3640687130335815E-4
 					</series>
 					<series title="lower limit" type="k" color="0xdd0000" encoding="csv">530.0,0.0
 					</series>
 					<series title="cumulative" type="l" color="0x000000" encoding="csv">530.0,0.0
 					</series>
 					<series title="average" type="pl" color="0x00dd00" encoding="csv">530.0,0.0
-530.0,0.6986301369863014
+530.0,0.6880842503845699
 					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 365 in total, 255 (69.863%) displayed, 110 (30.137%) remaining
+					<comment>Parameters: α=0.05, ε=0.01, bucket width=2.2204e-16, bucket count=1
+Runs: 8451 in total, 5815 (68.808%) displayed, 2636 (31.192%) remaining
 Span of displayed sample: [530, 530]
 Mean estimate of displayed sample: ≈ 530</comment>
 				</plot>
 				<plot title="Frequency Histogram" xaxis="LOC_AbsTime" yaxis="count">
-					<series title="count" type="b(0.000000)" color="0x0000ff" encoding="csv">530.0,255.0
+					<series title="count" type="b(0.000000)" color="0x0000ff" encoding="csv">530.0,5815.0
 					</series>
 					<series title="average" type="pl" color="0x00dd00" encoding="csv">530.0,0.0
-530.0,255.0
+530.0,5815.0
 					</series>
-					<comment>Parameters: α=0.05, ε=0.05, bucket width=2.2204e-16, bucket count=1
-Runs: 365 in total, 255 (69.863%) displayed, 110 (30.137%) remaining
+					<comment>Parameters: α=0.05, ε=0.01, bucket width=2.2204e-16, bucket count=1
+Runs: 8451 in total, 5815 (68.808%) displayed, 2636 (31.192%) remaining
 Span of displayed sample: [530, 530]
 Mean estimate of displayed sample: ≈ 530</comment>
 				</plot>
@@ -99595,8 +99454,8 @@ Mean estimate of displayed sample: ≈ 530</comment>
 			<formula>Pr[LOC_AbsTime&lt;=600](&lt;&gt;TS_MA0.GoToASafeState || TS_MA1.GoToASafeState ||  TS_MA2.GoToASafeState )</formula>
 			<comment>Delay 50
 (848/859 runs) Pr(&lt;&gt; …) in [0.977203,0.993591] (95% CI)
-1173,008s</comment>
-			<result outcome="success" type="quantity" value="0.985397 ± 0.00819381 (95% CI)" timestamp="2026-01-13 10:18:46 +0100">
+1400.699</comment>
+			<result outcome="success" type="quantity" value="0.985397 ± 0.00819381 (95% CI)" timestamp="2026-02-05 12:33:10 +0100">
 				<option key="--exploration" value="0"/>
 				<option key="--epsilon" value="0.01"/>
 				<details>0.985397 ± 0.00819381 (95% CI)</details>
@@ -99690,106 +99549,6 @@ Mean estimate of displayed sample: ≈ 530</comment>
 		<query>
 			<formula/>
 			<comment/>
-		</query>
-		<query>
-			<formula>checking margin</formula>
-			<comment>margin 0.1 speed max
-</comment>
-		</query>
-		<query>
-			<formula>Pr[LOC_AbsTime&lt;=600](&lt;&gt;TS_MA0.GoToASafeState || TS_MA1.GoToASafeState ||  TS_MA2.GoToASafeState )</formula>
-			<comment>(37/1374 runs) Pr(&lt;&gt; …) in [0.0190296,0.036928] (95% CI)
-0.6</comment>
-			<result outcome="success" type="quantity" value="0.0279788 ± 0.00894919 (95% CI)" timestamp="2026-01-15 17:26:47 +0100">
-				<option key="--exploration" value="0"/>
-				<option key="--epsilon" value="0.01"/>
-				<details>0.0279788 ± 0.00894919 (95% CI)</details>
-				<plot title="Probability Density Distribution" xaxis="LOC_AbsTime" yaxis="probability density">
-					<series title="density" type="b(0.000000)" color="0x0000ff" encoding="csv">530.0,1.2127597249833214E14
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">530.0,0.0
-530.0,1.2127597249833214E14
-					</series>
-					<comment>Parameters: α=0.05, ε=0.01, bucket width=2.2204e-16, bucket count=1
-Runs: 1374 in total, 37 (2.6929%) displayed, 1337 (97.307%) remaining
-Span of displayed sample: [530, 530]
-Mean estimate of displayed sample: ≈ 530</comment>
-				</plot>
-				<plot title="Probability Density Confidence Intervals" xaxis="LOC_AbsTime" yaxis="probability density">
-					<series title="upper limit" type="b(0.000000)" color="0xa0a0ff" encoding="csv">530.0,0.03692795659503777
-					</series>
-					<series title="lower limit" type="b(0.000000)" color="0x0000ff" encoding="csv">530.0,0.01902956903765677
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">530.0,0.0
-530.0,1.6630873156096594E14
-					</series>
-					<comment>Parameters: α=0.05, ε=0.01, bucket width=2.2204e-16, bucket count=1
-Runs: 1374 in total, 37 (2.6929%) displayed, 1337 (97.307%) remaining
-Span of displayed sample: [530, 530]
-Mean estimate of displayed sample: ≈ 530</comment>
-				</plot>
-				<plot title="Probability Distribution" xaxis="LOC_AbsTime" yaxis="probability">
-					<series title="probability" type="b(0.000000)" color="0x0000ff" encoding="csv">530.0,0.026928675400291122
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">530.0,0.0
-530.0,0.026928675400291122
-					</series>
-					<comment>Parameters: α=0.05, ε=0.01, bucket width=2.2204e-16, bucket count=1
-Runs: 1374 in total, 37 (2.6929%) displayed, 1337 (97.307%) remaining
-Span of displayed sample: [530, 530]
-Mean estimate of displayed sample: ≈ 530</comment>
-				</plot>
-				<plot title="Probability Confidence Intervals" xaxis="LOC_AbsTime" yaxis="probability">
-					<series title="upper limit" type="b(0.000000)" color="0xa0a0ff" encoding="csv">530.0,0.03692795659503777
-					</series>
-					<series title="lower limit" type="b(0.000000)" color="0x0000ff" encoding="csv">530.0,0.01902956903765677
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">530.0,0.0
-530.0,0.03692795659503777
-					</series>
-					<comment>Parameters: α=0.05, ε=0.01, bucket width=2.2204e-16, bucket count=1
-Runs: 1374 in total, 37 (2.6929%) displayed, 1337 (97.307%) remaining
-Span of displayed sample: [530, 530]
-Mean estimate of displayed sample: ≈ 530</comment>
-				</plot>
-				<plot title="Cumulative Probability Distribution" xaxis="LOC_AbsTime" yaxis="probability">
-					<series title="cumulative" type="l" color="0x000000" encoding="csv">530.0,0.0
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">530.0,0.0
-530.0,0.02692867540029109
-					</series>
-					<comment>Parameters: α=0.05, ε=0.01, bucket width=2.2204e-16, bucket count=1
-Runs: 1374 in total, 37 (2.6929%) displayed, 1337 (97.307%) remaining
-Span of displayed sample: [530, 530]
-Mean estimate of displayed sample: ≈ 530</comment>
-				</plot>
-				<plot title="Cumulative Probability Confidence Intervals" xaxis="LOC_AbsTime" yaxis="probability">
-					<series title="upper limit" type="k" color="0x0000dd" encoding="csv">530.0,0.002681173201548414
-					</series>
-					<series title="lower limit" type="k" color="0xdd0000" encoding="csv">530.0,0.0
-					</series>
-					<series title="cumulative" type="l" color="0x000000" encoding="csv">530.0,0.0
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">530.0,0.0
-530.0,0.02692867540029109
-					</series>
-					<comment>Parameters: α=0.05, ε=0.01, bucket width=2.2204e-16, bucket count=1
-Runs: 1374 in total, 37 (2.6929%) displayed, 1337 (97.307%) remaining
-Span of displayed sample: [530, 530]
-Mean estimate of displayed sample: ≈ 530</comment>
-				</plot>
-				<plot title="Frequency Histogram" xaxis="LOC_AbsTime" yaxis="count">
-					<series title="count" type="b(0.000000)" color="0x0000ff" encoding="csv">530.0,37.0
-					</series>
-					<series title="average" type="pl" color="0x00dd00" encoding="csv">530.0,0.0
-530.0,37.0
-					</series>
-					<comment>Parameters: α=0.05, ε=0.01, bucket width=2.2204e-16, bucket count=1
-Runs: 1374 in total, 37 (2.6929%) displayed, 1337 (97.307%) remaining
-Span of displayed sample: [530, 530]
-Mean estimate of displayed sample: ≈ 530</comment>
-				</plot>
-			</result>
 		</query>
 	</queries>
 </nta>
